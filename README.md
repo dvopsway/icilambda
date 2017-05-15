@@ -1,4 +1,4 @@
-# Icilambda : Managing icinga2 using lambda 
+# Icilambda : Managing icinga2 using lambda (still a work in progress)
 
 ## Introduction
 
@@ -29,7 +29,7 @@ if you want to disable consul overriding make following setting false in propert
 enable_consul = False
 ```
 
-create monitoring profiles in properties.py based on you tag of aws instance:
+create monitoring profiles in properties.py based on your tag of aws instance:
 for e.g:
 ```
 monitoring_profiles = {
@@ -40,12 +40,12 @@ monitoring_profiles = {
     "elasticsearch": ["disk_check", "mem_check", "load_check", "procs_check", "proc_elasticsearch"],
 }
 ```
-The key in above dictionary will set as tags on aws, key name will be 'Monitor' value would be profile name: for e.g for redis machine tag create would be:
+The key in above dictionary will be set as tags on aws, key name will be 'Monitor' value would be profile name: for e.g for redis machine tag created would be:
 ```
 Monitor : redis
 ```
 
-Make sure checks that you have defined in profile have their definition in all_checks variable in properties.py
+Make sure checks that checks for tags you have defined in monitoring_profile have their definition in all_checks variable in properties.py
 for e.g
 ```
 all_checks = {
@@ -59,9 +59,9 @@ all_checks = {
     }
 }
 ```
-for more examples of check, checkout properties.py
+for more examples of checks, checkout properties.py
 
-Make sure parameters in properties.py are updated, create a zip of files directly, that will be your lambda package. Deploy these lambda package in VPC (private subnets) which has access to consul cluster, icinga2 server. 
+Make sure parameters in properties.py are updated, create a zip of files directly, that will be your lambda package. Deploy these lambda package in VPC (private subnets) which has access to consul cluster, icinga2 server. Also make sure that lambda role you are using should have access to read ec2 information. 
 
 with the same zip file create two lambda functions:
 - add_icinga_checks : lambda handler will be add_checks.lambda_handler .
@@ -70,3 +70,6 @@ with the same zip file create two lambda functions:
 To trigger these alerts use cloudwatch crons. 
 - add_checks can run in every 15 mins.
 - remove_checks will run more frequently to remove noise from system as soon as possible, a good number is every 2 mins.
+
+Tip:
+You can add these lambda code behind an api gateway to make the execution on demand, and call the url in userdata passed to the machine on its launch.
