@@ -61,7 +61,7 @@ all_checks = {
 ```
 for more examples of checks, checkout properties.py
 
-Make sure parameters in properties.py are updated, create a zip of files directly, that will be your lambda package. Deploy these lambda package in VPC (private subnets) which has access to consul cluster, icinga2 server. Also make sure that lambda role you are using should have access to read ec2 information. 
+Make sure parameters in properties.py are updated, create a zip of files directly, that will be your lambda package. Deploy this lambda package in VPC (private subnets) which has access to consul cluster, icinga2 server. Also make sure that lambda role you are using should have access to read ec2 information. 
 
 with the same zip file create two lambda functions:
 - add_icinga_checks : lambda handler will be add_checks.lambda_handler .
