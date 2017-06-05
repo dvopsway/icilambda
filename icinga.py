@@ -109,7 +109,7 @@ def remove_service(host, service):
                                                         host, service), auth=icinga_auth, headers=icinga_headers, verify=False)
 
     if check_service.status_code == 200:
-        delete_service = requests.delete("%s/services/%s!%s" % (
+        delete_service = requests.delete("%s/services/%s!%s?cascade=1" % (
             icinga_api_endpoint, host, service), auth=icinga_auth, headers=icinga_headers, verify=False)
         if delete_service.status_code == 200:
             print "Service %s is deleted from host %s" % (service, host)

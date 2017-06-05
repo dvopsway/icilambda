@@ -1,10 +1,18 @@
-# Icilambda : Managing icinga2 using lambda (still a work in progress)
+# Icilambda : Managing icinga2 using lambda 
 
 ## Introduction
 
 The project primarily aims at simplyfying how monitoring is done in cloud (AWS), it uses power of icinga2 api, consul kv, aws tags and serverless technology(AWS Lambda) to manage monitoring seemlessly across environments.
 
-## Understanding Flow
+## Project
+
+This project help you setup monitoring based on simpla role based aws tags, you can use consul ks as well to keep you settings. Lambda functions reads those tags and sets up montitoring or delete it.
+
+###Flow Chart
+
+![Icilambda flow chart](https://github.com/dvopsway/icilambda/blob/master/Flow%20Chart.png)
+
+## AWS Lambda Part 
 
 The project has two lambda handlers:
 

@@ -8,163 +8,222 @@ excluded_services = ['ssh', 'ping4']
 host = None
 
 monitoring_profiles = {
-    "base": ["disk_check", "mem_check", "load_check", "procs_check"],
-    "mongo": ["disk_check", "mem_check", "load_check", "procs_check", "proc_mongo"],
-    "redis": ["disk_check", "mem_check", "load_check", "procs_check", "proc_redis"],
-    "haproxy": ["disk_check", "mem_check", "load_check", "procs_check", "proc_haproxy", "proc_supervisor"],
-    "elasticsearch": ["disk_check", "mem_check", "load_check", "procs_check", "proc_elasticsearch"],
+    "base": ["disk_check", "mem_check", "load_check", "procs_check", "iowait_check"],
+    "thumbor": ["disk_check", "mem_check", "load_check", "procs_check_thumbor", "iowait_check"],
+    "mongo": ["disk_check", "mem_check", "load_check", "procs_check", "proc_mongo", "iowait_check"],
+    "redis": ["disk_check", "mem_check", "load_check", "procs_check", "proc_redis", "iowait_check"],
+    "haproxy": ["disk_check", "mem_check", "load_check", "procs_check", "proc_haproxy", "iowait_check"],
+    "elasticsearch": ["disk_check", "mem_check", "load_check", "procs_check", "proc_elasticsearch", "iowait_check"],
+    "dns": ["disk_check", "mem_check", "load_check", "procs_check", "iowait_check"],
+    "cassandra": ["disk_check", "mem_check", "load_check", "procs_check", "iowait_check", "check_cassandra_client", "check_cassandra_cluster"],
+    "vpn": ["disk_check", "mem_check", "load_check", "procs_check", "iowait_check"],
+    "api": ["disk_check", "mem_check", "load_check", "procs_check", "iowait_check", "api_check"],
+    "kafka": ["disk_check", "mem_check", "load_check", "procs_check", "iowait_check", "check_kafka"],
+    "logstash": ["disk_check", "mem_check", "load_check", "procs_check", "iowait_check"],
+    "solr": ["disk_check", "mem_check", "load_check", "procs_check", "iowait_check", "check_solr"],
+    "storm": ["disk_check", "mem_check", "load_check", "procs_check", "iowait_check"]
 }
 
+if enable_consul:
+    check_profile_on_consul = requests.get(
+        "http://%s:8500/v1/kv/monitoring/conf/profiles.json" % consul_host)
+
+    if len(check_profile_on_consul.content) != 0:
+        monitoring_profiles = json.loads(json.loads(check_profile_on_consul.content)[
+            0]['Value'].decode("base64"))
+
 all_checks = {
-    "disk_check": {"templates": ["generic-service"],
-                   "attrs": {
-        "display_name": "disk utilization",
-        "check_command": "disk",
-        "vars.disk_all": True,
-        "host_name": host
-    }
-    },
-    "mem_check":  {"templates": ["generic-service"],
-                   "attrs": {
-        "display_name": "memory utilization",
-        "check_command": "mem",
-        "vars.mem_used": True,
-        "vars.mem_warning": 90,
-        "vars.mem_critical": 95,
-        "host_name": host
-    }
-    },
-    "load_check":  {"templates": ["generic-service"],
-                    "attrs": {
-        "display_name": "cpu load",
-        "check_command": "load",
-        "vars.load_percpu": True,
-        "host_name": host
-    }
-    },
-    "procs_check":  {"templates": ["generic-service"],
-                     "attrs": {
-        "display_name": "check processes",
-        "check_command": "procs",
-        "vars.procs_warning": 800,
-        "vars.procs_critical": 1000,
-                     "host_name": host
-    }
-    },
-    "iostat_check": {
+    "disk_check": {
+        "templates": ["generic-service"],
         "attrs": {
-            "display_name": "check iostat",
-            "check_command": "iostat",
-            "vars.iostat_disk": 1,
-            "vars.iostat_wtps": 800,
-            "vars.iostat_wread": 5000,
-            "vars.iostat_wwrite": 5000,
-            "vars.iostat_ctps": 1000,
-            "vars.iostat_cread": 7000,
-            "host_name": host
+            "display_name": "disk utilization",
+            "check_command": "nrpe",
+            "vars.nrpe_command": "icinga_check_disk"
         }
     },
-    "cpu_check":  {"templates": ["generic-service"],
-                   "attrs": {
-        "display_name": "check cpu",
-        "check_command": "cpu",
-        "vars.crit_pct_user_cpu": 95,
-        "vars.crit_pct_sys_cpu": 95,
-        "host_name": host
-    }
+    "mem_check": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "memory utilization",
+            "check_command": "nrpe",
+            "vars.nrpe_command": "icinga_check_mem"
+        }
     },
-    "file_descriptors":  {"templates": ["generic-service"],
-                          "attrs": {
-        "display_name": "file descriptors",
-        "check_command": "file_descriptors",
-        "host_name": host
-    }
+    "load_check": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "cpu load",
+            "check_command": "nrpe",
+            "vars.nrpe_command": "icinga_check_load"
+        }
     },
-    "read_only_fs":  {"templates": ["generic-service"],
-                      "attrs": {
-        "display_name": "read only filesystem",
-        "check_command": "rofs",
-        "host_name": host
-    }
+    "procs_check": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "check processes",
+            "check_command": "nrpe",
+            "vars.nrpe_command": "icinga_check_procs"
+        }
     },
-    "running_kernel":  {"templates": ["generic-service"],
-                        "attrs": {
-        "display_name": "running kernel",
-        "check_command": "running_kernel",
-        "host_name": host
-    }
+    "procs_check_thumbor": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "check processes",
+            "check_command": "nrpe",
+            "vars.nrpe_command": "icinga_check_procs_thumbor"
+        }
     },
-    "tcp_states":  {"templates": ["generic-service"],
-                    "attrs": {
-        "display_name": "tcp connections",
-        "check_command": "tcp_states",
-        "host_name": host
-    }
+    "iowait_check": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "check iostat",
+            "check_command": "nrpe",
+            "vars.nrpe_command": "icinga_check_iowait"
+        }
     },
-    "proc_httpd":  {"templates": ["generic-service"],
-                    "attrs": {
-        "display_name": "httpd process",
-        "check_command": "procs",
-        "vars.procs_command": "httpd",
-        "vars.procs_warning": "1:",
-        "vars.procs_critical": "1:",
-        "vars.procs_metric": "PROCS",
-        "host_name": host
-    }
+    "cpu_check": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "check cpu",
+            "check_command": "nrpe",
+            "vars.nrpe_command": "icinga_check_cpu"
+        }
     },
-    "proc_mongo":  {"templates": ["generic-service"],
-                    "attrs": {
-        "display_name": "mongod process",
-        "check_command": "procs",
-        "vars.procs_command": "mongod",
-        "vars.procs_warning": "1:",
-        "vars.procs_critical": "1:",
-        "vars.procs_metric": "PROCS",
-        "host_name": host
-    }
+    "file_descriptors": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "file descriptors",
+            "check_command": "nrpe",
+            "vars.nrpe_command": "icinga_check_cpu"
+        }
     },
-    "proc_redis":  {"templates": ["generic-service"],
-                    "attrs": {
-        "display_name": "redis process",
-        "check_command": "procs",
-        "vars.procs_command": "redis",
-        "vars.procs_warning": "1:",
-        "vars.procs_critical": "1:",
-        "vars.procs_metric": "PROCS",
-        "host_name": host
-    }
+    "read_only_fs": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "read only filesystem",
+            "check_command": "nrpe",
+            "vars.nrpe_command": "icinga_check_rofs"
+        }
     },
-    "proc_haproxy":  {"templates": ["generic-service"],
-                      "attrs": {
-        "display_name": "haproxy process",
-        "check_command": "procs",
-        "vars.procs_command": "haproxy",
-        "vars.procs_warning": "1:",
-        "vars.procs_critical": "1:",
-        "vars.procs_metric": "PROCS",
-        "host_name": host
-    }
+    "running_kernel": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "running kernel",
+            "check_command": "nrpe",
+            "vars.nrpe_command": "icinga_running_kernel"
+        }
     },
-    "proc_supervisor":  {"templates": ["generic-service"],
-                         "attrs": {
-        "display_name": "supervisor process",
-        "check_command": "procs",
-        "vars.procs_command": "supervisord",
-        "vars.procs_warning": "1:",
-        "vars.procs_critical": "1:",
-        "vars.procs_metric": "PROCS",
-        "host_name": host
-    }
+    "tcp_states": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "tcp connections",
+            "check_command": "nrpe",
+            "vars.nrpe_command": "icinga_tcp_states"
+        }
     },
-    "proc_elasticsearch":  {"templates": ["generic-service"],
-                            "attrs": {
-        "display_name": "elasticsearch process",
-        "check_command": "procs",
-        "vars.procs_command": "elasticsearch",
-        "vars.procs_warning": "1:",
-        "vars.procs_critical": "1:",
-        "vars.procs_metric": "PROCS",
-        "host_name": host
+    "proc_httpd": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "httpd process",
+            "check_command": "nrpe",
+            "vars.nrpe_command": "icinga_check_httpd"
+        }
+    },
+    "proc_redis": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "redis process",
+            "check_command": "nrpe",
+            "vars.nrpe_command": "icinga_check_redis"
+        }
+    },
+    "proc_haproxy": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "haproxy process",
+            "check_command": "nrpe",
+            "vars.nrpe_command": "icinga_check_haproxy"
+        }
+    },
+    "proc_supervisor": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "supervisor process",
+            "check_command": "nrpe",
+            "vars.nrpe_command": "icinga_check_supervisor"
+        }
+    },
+    "proc_elasticsearch": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "elasticsearch process",
+            "check_command": "tcp",
+            "vars.tcp_port": 9200
+        }
+    },
+    "proc_mongo": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "Mongo port check",
+            "check_command": "tcp",
+            "vars.tcp_port": 27017
+        }
+    },
+   "api_check": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "api port check",
+            "check_command": "tcp",
+            "vars.tcp_port": 8080
+        }
+    },
+    "check_cassandra_thrift": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "cassandra thrift port check",
+            "check_command": "tcp",
+            "vars.tcp_port": 9160
+        }
+    },
+    "check_cassandra_client": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "cassandra client port check",
+            "check_command": "tcp",
+            "vars.tcp_port": 9042
+        }
+    },
+    "check_cassandra_cluster": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "cassandra cluster port check",
+            "check_command": "tcp",
+            "vars.tcp_port": 7000
+        }
+    },
+    "check_kafka": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "kafka port check",
+            "check_command": "tcp",
+            "vars.tcp_port": 9092
+        }
+    },
+    "check_solr": {
+        "templates": ["generic-service"],
+        "attrs": {
+            "display_name": "solr port check",
+            "check_command": "tcp",
+            "vars.tcp_port": 8080
+        }
     }
-    }
+
 }
+
+if enable_consul:
+    checks_on_consul = requests.get(
+        "http://%s:8500/v1/kv/monitoring/conf/checks.json" % consul_host)
+
+    if len(checks_on_consul.content) != 0:
+        all_checks = json.loads(json.loads(checks_on_consul.content)[
+            0]['Value'].decode("base64"))
