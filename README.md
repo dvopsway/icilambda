@@ -8,7 +8,7 @@ The project primarily aims at simplyfying how monitoring is done in cloud (AWS),
 
 This project help you setup monitoring based on simpla role based aws tags, you can use consul ks as well to keep you settings. Lambda functions reads those tags and sets up montitoring or delete it.
 
-###Flow Chart
+### Flow Chart
 
 ![Icilambda flow chart](https://github.com/dvopsway/icilambda/blob/master/Flow%20Chart.png)
 
