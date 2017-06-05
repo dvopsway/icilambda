@@ -8,7 +8,7 @@ The project primarily aims at simplyfying how monitoring is done in cloud (AWS),
 
 This project helps you setup monitoring based on simpla role based aws tags, you can use consul kv as well to keep your settings. Lambda functions read those tags and create montitoring or delete it respectively. We are using nrpe agents right now, because we are using icinga2 api to create or delete monitoring, if we use icinga2 agent, then we won't be able delete that node monitoring using api.
 
-->![Icilambda flow chart](https://github.com/dvopsway/icilambda/blob/master/Flow%20Chart.png)<-
+-> ![Icilambda flow chart](https://github.com/dvopsway/icilambda/blob/master/Flow%20Chart.png) <-
 
 ## AWS Lambda Part 
 
