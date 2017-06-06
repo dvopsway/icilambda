@@ -88,7 +88,7 @@ This handler is responsible for removing services which are not required anymore
 
 ## Setting up AWS Lambda
 
-Packages required for this project:
+Python pip package required for this project:
   - requests
 
 A guide on how to create a lambda python package - [AWS Lambda Python Package](http://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html)
