@@ -13,22 +13,6 @@ This project helps you setup monitoring based on simpla role based aws tags, you
   <img width="720" height="600" src="https://raw.githubusercontent.com/dvopsway/icilambda/master/Flow%20Chart.png">
 </p>
 
-## AWS Lambda Part 
-
-The project has two lambda handlers:
-
-```
-add_checks.lambda_handler():
-```
-
-This handler starts with getting monitoring information based on tags set in aws instances and create a required checks profile for them, in case you want to override them create a kv in consul under monitoring/hostname.json with monitoring information. Once this information is collected it uses icinga api to create those checks. In case the checks are already there it simply moves on. With services this handler is also responsible for adding hosts and hostgroups. 
-
-```
-remove_checks.lambda_handler()
-```
-
-This handler is responsible for removing services which are not required anymore based on profile changes or required state changes, it also makes sure a host monitoring is removed if that host is terminated in AWS.
-
 ## Usage instruction
 
 
@@ -84,6 +68,23 @@ all_checks = {
 }
 ```
 for more examples of checks, checkout properties.py
+
+
+## AWS Lambda Functions 
+
+The project has two lambda handlers:
+
+```
+add_checks.lambda_handler():
+```
+
+This handler starts with getting monitoring information based on tags set in aws instances and create a required checks profile for them, in case you want to override them create a kv in consul under monitoring/hostname.json with monitoring information. Once this information is collected it uses icinga api to create those checks. In case the checks are already there it simply moves on. With services this handler is also responsible for adding hosts and hostgroups. 
+
+```
+remove_checks.lambda_handler()
+```
+
+This handler is responsible for removing services which are not required anymore based on profile changes or required state changes, it also makes sure a host monitoring is removed if that host is terminated in AWS.
 
 ## Setting up AWS Lambda
 
