@@ -48,7 +48,7 @@ In case you have enabled consul configs in properties.py. Following is the assum
     - node2.json 
   - conf
     - checks.json - used to overide all_checks variable in properties.py
-    - profiles.json - used to override monitoring_profiles variablkes in properties.py
+    - profiles.json - used to override monitoring_profiles variable in properties.py
     
 ### Configs in properties.py
 
