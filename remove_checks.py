@@ -31,32 +31,33 @@ def get_required_state():
         host = [
             t.get('Value') for t in instance['Tags']
             if t['Key'] == 'Name'][0] + "." + domain_name
+        state = instance['State']['Name']
+        if str(state) == "running" or str(state) == "stopped":
+            if enable_consul:
+                check_consul = requests.get(
+                    "http://%s:8500/v1/kv/monitoring/%s.json" % (consul_host, host))
 
-        if enable_consul:
-            check_consul = requests.get(
-                "http://%s:8500/v1/kv/monitoring/%s.json" % (consul_host, host))
-
-            required_state = {}
-            if len(check_consul.content) == 0:
+                required_state = {}
+                if len(check_consul.content) == 0:
+                    for check in prepare_checks([monitoring_tag]):
+                        if host in required_state:
+                            required_state[host].append(check)
+                        else:
+                            required_state[host] = [check]
+                else:
+                    checks_on_consul = json.loads(json.loads(check_consul.content)[
+                        0]['Value'].decode("base64"))
+                    for k, v in checks_on_consul.iteritems():
+                        if host in required_state:
+                            required_state[host].append(k)
+                        else:
+                            required_state[host] = [k]
+            else:
                 for check in prepare_checks([monitoring_tag]):
                     if host in required_state:
                         required_state[host].append(check)
                     else:
                         required_state[host] = [check]
-            else:
-                checks_on_consul = json.loads(json.loads(check_consul.content)[
-                    0]['Value'].decode("base64"))
-                for k, v in checks_on_consul.iteritems():
-                    if host in required_state:
-                        required_state[host].append(k)
-                    else:
-                        required_state[host] = [k]
-        else:
-            for check in prepare_checks([monitoring_tag]):
-                if host in required_state:
-                    required_state[host].append(check)
-                else:
-                    required_state[host] = [check]
 
         return required_state
 
