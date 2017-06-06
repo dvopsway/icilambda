@@ -1,6 +1,9 @@
 icinga_api_endpoint = "https://127.0.0.1:4665/v1/objects"
 enable_consul = False
 consul_host = "localhost"
+
+# domain name that will be appended to generate fqdn for hosts
+domain_name = "example.com"
 icinga_auth = ("root", "icinga")
 icinga_headers = {"Accept": "application/json"}
 excluded_machines = ['docker-icinga2']

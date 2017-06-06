@@ -32,7 +32,7 @@ def lambda_handler():
                 if t['Key'] == 'Monitor'][0]
             host = [
                 t.get('Value') for t in instance['Tags']
-                if t['Key'] == 'Name'][0] + ".in.bsbportal.com"
+                if t['Key'] == 'Name'][0] + "." + domain_name
             setup_hostgroup(monitoring_tag)
             if enable_consul:
                 check_consul = requests.get(
