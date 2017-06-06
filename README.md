@@ -38,7 +38,22 @@ if you want to disable consul overriding make following setting false in propert
 enable_consul = False
 ```
 
+### Consul Configs:
+
+In case you have enabled consul configs in properties.py. Following is the assumed kv paths:
+
+- monitoring - top level dir in consul kv
+  - nodes - This directory is used to override node tags.
+    - node1.json - node1 is hostname with which machine is registered in icinga
+    - node2.json 
+  - conf
+    - checks.json - used to overide all_checks variable in properties.py
+    - profiles.json - used to override monitoring_profiles variablkes in properties.py
+    
+### Configs in properties.py
+
 create monitoring profiles in properties.py based on your tag of aws instance:
+
 for e.g:
 ```
 monitoring_profiles = {
