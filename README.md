@@ -90,8 +90,7 @@ for more examples of checks, checkout properties.py
 Packages required for this project:
   - requests
 
-A guide on how to create a lambda python package [AWS Lambda Python Package](http://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html)
-
+A guide on how to create a lambda python package - [AWS Lambda Python Package](http://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html)
   
 Make sure parameters in properties.py are updated, create a zip of files directly, that will be your lambda package. Deploy this lambda package in VPC (private subnets) which has access to consul cluster, icinga2 server. Also make sure that lambda role you are using should have access to read ec2 information. 
 
